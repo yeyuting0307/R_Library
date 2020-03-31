@@ -4,9 +4,9 @@ author: "Mike"
 date: "2020/4/1"
 output: 
   html_document: 
-    theme: journal
-    toc: true
-    toc_float: true
+    theme: united
+    toc: yes
+    toc_float: yes
 ---
 
 ```{r setup, include=FALSE}
