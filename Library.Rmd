@@ -40,12 +40,13 @@ for(p in package_name) {
 ![](ContingencyTable.jpg){width=100%}
 
 ```{r message=FALSE, warning=FALSE}
-library(dplyr)
-library(tidyr)
-library(ggplot2)
 
 model_performance <- function(predict_condition, true_condition){
   
+  require(dplyr)
+  require(tidyr)
+  require(ggplot2)
+    
   # Confusion Matrix, Contingency Table
   confusion_matrix <- table(predict_condition, true_condition)
   
@@ -190,5 +191,92 @@ model_performance <- function(predict_condition, true_condition){
   )
   
 }
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+# Example
+library(e1071)
+data(HouseVotes84, package = "mlbench")
+model <- naiveBayes(Class ~ ., data = HouseVotes84)
+
+pred_NaiveBayes <- predict(model, HouseVotes84)
+
+model_performance(pred_NaiveBayes, HouseVotes84$Class)
+```
+
+
+## DoParallel
+
+```{r}
+
+para = function(iterator, loop_function, user_combine = 'c',
+                external_packages = NULL, cluster = 4){
+
+  require(foreach)
+  require(magrittr)
+  require(parallel)
+  require(doParallel)
+  require(tcltk)
+  
+  
+  cl = makeCluster(cluster)
+  registerDoParallel(cl)
+  
+  getDoParWorkers()    # You may try it with doMC::registerDoMC()
+  getDoParRegistered() # T/F, check if doPar is registered
+  getDoParName()       # registered name of doPar
+  getDoParVersion()    # version of doPar
+  
+  # numeric iterator is needed for calculating progress-bar
+  iter_length = length(iterator)
+  
+  
+  output <- foreach( i = 1:iter_length, 
+                     .packages = c("tcltk", external_packages), 
+                     .combine= user_combine) %dopar% {
+      
+      # Set progress-bar
+      if(!exists("tkPB")){
+          tkPB <- tkProgressBar("Parallel task","Here shows each output.", min=1, max=100)
+      }
+      
+      # Temporary store each output 
+      each_output = loop_function(iterator[i])
+      
+      # Show each output and progress
+      setTkProgressBar(tkPB, i,
+                       title = paste("進度估計", round(100*i/iter_length), "%"),
+                       paste(iterator[i], ":", each_output)
+                       ) 
+      # The last object is the output to be combined.
+      each_output
+      
+      }
+  
+  # close cluster
+  stopImplicitCluster()
+  stopCluster(cl)
+  
+  return(output)
+
+}
+
+
+```
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+# Example
+example_iter = rep(c('a','b'), 100)
+
+example_function = function(x){
+  if(x == 'a'){
+    return(x)
+  }else{
+    cat('not a')
+  }
+}
+
+result = para(example_iter, example_function)
 ```
 
