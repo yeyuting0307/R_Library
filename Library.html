@@ -1817,7 +1817,7 @@ model_performance(pred_NaiveBayes, HouseVotes84$Class)</code></pre>
       
       # Show each output and progress
       setTkProgressBar(tkPB, i,
-                       title = paste(&quot;進度估計&quot;, round(100*i/iter_length), &quot;%&quot;),
+                       title = paste(&quot;Progress : &quot;, round(100*i/iter_length), &quot;%&quot;),
                        paste(iterator[i], &quot;:&quot;, each_output)
                        ) 
       # The last object is the output to be combined.

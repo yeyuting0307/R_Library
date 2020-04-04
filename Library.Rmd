@@ -245,7 +245,7 @@ para = function(iterator, loop_function, user_combine = 'c',
       
       # Show each output and progress
       setTkProgressBar(tkPB, i,
-                       title = paste("進度估計", round(100*i/iter_length), "%"),
+                       title = paste("Progress : ", round(100*i/iter_length), "%"),
                        paste(iterator[i], ":", each_output)
                        ) 
       # The last object is the output to be combined.
